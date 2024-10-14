@@ -31,7 +31,8 @@ def create_board(n: int) -> list:
     
     return board
 
-def numb_of_ways(board: list):
+## basic
+def numb_of_ways_dp(board: list):
     ## all possible ways
     #TODO: print route
     ## dp
@@ -56,6 +57,24 @@ def numb_of_ways(board: list):
 
     return dp[n - 1][n - 1]
 
+def num_of_ways_recursion(board: list) -> int:
+    n = len(board)
+
+    def recursion(i: int, j: int) -> int:
+        if i == j == n - 1:
+            return 1
+        if i < 0 or i > n - 1 or j < 0 or j > n - 1:
+            return 0
+        if board[i][j] == -1:
+            return 0
+        return recursion(i, j + 1) + recursion(i + 1, j)
+    
+    return recursion(0, 0)
+
+
+
+
+## advanced
 ## whenever changing direction, cost + 1
 def num_of_shortest_path(board: list):
     n = len(board)
@@ -110,7 +129,13 @@ def get_expected_value(n: int) -> float:
     t = 1000000 #find threshold
     sum = 0
 
-    num_of_shortest_path(create_board(n))
+    b = create_board(n)
+    print_board(b)
+    n1 = numb_of_ways_dp(b)
+    n2 = num_of_ways_recursion(b)
+
+    print(n1, n2)
+
 
     # for _ in range(t):
     #     board = create_board(n)
