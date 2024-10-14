@@ -59,13 +59,14 @@ def numb_of_ways(board: list):
 ## whenever changing direction, cost + 1
 def num_of_shortest_path(board: list):
     n = len(board)
-    dp = [[[(0, 0), (0, 0)] for _ in range(n)] for _ in range(n)]
-    invalid_path = (sys.maxsize, 0)
-
+    
     # dp[i][j][k] = (min_cost, num_of_ways)
     # k indicates the direction of path to the position board[i][j]
     # k = 0 -> comes from left
     # k = 1 -> comes from top
+    dp = [[[(0, 0), (0, 0)] for _ in range(n)] for _ in range(n)]
+    invalid_path = (sys.maxsize, 0)
+
     dp[0][0][0] = dp[0][0][1] = (0, 1)
 
     for i in range(n):
@@ -82,35 +83,15 @@ def num_of_shortest_path(board: list):
                 cur[0] = dp[i][j - 1][0]
                 cur[1] = invalid_path
             else:
-                # k = 0 -> from left
-                left_block = dp[i][j - 1]
-
-                left_cost_left = left_block[0][0]
-                left_cost_top = left_block[1][0] + 1
-                min_cost_left = min(left_cost_left, left_cost_top)
-                num_of_shortest_path_left = left_block[0][1]
-
-                if left_cost_top == left_cost_left:
-                    num_of_shortest_path_left += left_block[1][1]
-                elif left_cost_top < left_cost_left:
-                    num_of_shortest_path_left = left_block[1][1]
-
-                cur[0] = (min_cost_left, num_of_shortest_path_left)  
-
-                # k = 1 -> from top
-                top_block = dp[i - 1][j]
-
-                top_cost_left = top_block[0][0] + 1
-                top_cost_top = top_block[1][0]
-                min_cost_top = min(top_cost_left, top_cost_top)
-                num_of_shortest_path_top = top_block[1][1]
-
-                if top_cost_left == top_cost_top:
-                    num_of_shortest_path_top += top_block[1][1]
-                elif top_cost_left < top_cost_top:
-                    num_of_shortest_path_top = top_block[0][1]
-                    
-                cur[1] = (min_cost_top, num_of_shortest_path_top)  
+                def calculate(same_direction: tuple[int, int], different_direction: tuple[int, int]) -> tuple[int, int]:
+                    if same_direction[0] < different_direction[0] + 1:
+                        return same_direction
+                    elif same_direction[0] == different_direction[0] + 1:
+                        return (same_direction[0], same_direction[1] + different_direction[1])
+                    else:
+                        return (different_direction[0] + 1, different_direction[1])
+                cur[0] = calculate(dp[i][j-1][0], dp[i][j-1][1])
+                cur[1] = calculate(dp[i-1][j][1], dp[i-1][j][0])        
                 
     print_board(board)
     for i in range(n):
