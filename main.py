@@ -61,9 +61,10 @@ def num_of_ways_recursion(board: list) -> int:
     n = len(board)
 
     def recursion(i: int, j: int) -> int:
+        nonlocal n
         if i == j == n - 1:
             return 1
-        if i < 0 or i > n - 1 or j < 0 or j > n - 1:
+        if i > n - 1 or j > n - 1:
             return 0
         if board[i][j] == -1:
             return 0
@@ -72,11 +73,9 @@ def num_of_ways_recursion(board: list) -> int:
     return recursion(0, 0)
 
 
-
-
 ## advanced
 ## whenever changing direction, cost + 1
-def num_of_shortest_path(board: list):
+def num_of_shortest_path_dp(board: list):
     n = len(board)
     
     # dp[i][j][k] = (min_cost, num_of_ways)
@@ -125,6 +124,38 @@ def num_of_shortest_path(board: list):
     print(result)
     return result
 
+def num_of_shortest_path_recursion(board: list) -> int:
+    n = len(board)
+    min_cost = sys.maxsize
+    path_count = 0
+
+    # 0->from left, 1->from top
+    def recursion(i: int, j: int, cost: int, direction: int):
+        nonlocal n, min_cost, path_count
+        if i == j == n - 1:
+            if cost < min_cost:
+                min_cost = cost
+                path_count = 1
+            elif cost == min_cost:
+                path_count += 1
+            return
+        if i > n - 1 or j > n - 1 or board[i][j] == -1:
+            return
+        
+        if i == j == 0:
+            recursion(i, j + 1, cost, 0)
+            recursion(i + 1, j, cost, 1)
+        else:
+            recursion(i, j + 1, cost + (direction != 0), 0)
+            recursion(i + 1, j, cost + (direction != 1), 1)
+    
+    recursion(0, 1, 0, 0)
+    recursion(1, 0, 0, 1)
+
+    return path_count
+
+
+        
 def get_expected_value(n: int) -> float:
     t = 1000000 #find threshold
     sum = 0
@@ -134,7 +165,10 @@ def get_expected_value(n: int) -> float:
     n1 = numb_of_ways_dp(b)
     n2 = num_of_ways_recursion(b)
 
-    print(n1, n2)
+    n3 = num_of_shortest_path_recursion(b)
+    n4 = num_of_shortest_path_dp(b)
+    print("rec dp",n3, n4)
+    # print(n1, n2)
 
 
     # for _ in range(t):
