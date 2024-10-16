@@ -1,8 +1,11 @@
 import random
 import sys
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 def gen_obstacle(n: int, p: float) -> list:
-    num_of_ob = int((n * n - 1) * p)
+    num_of_ob = int((n * n - 2) * p)
     obstacles = random.sample(range(1, n * n - 1), num_of_ob)
     return obstacles
 
@@ -33,7 +36,6 @@ def create_board(n: int) -> list:
 
 ## basic
 def numb_of_ways_dp(board: list):
-    ## all possible ways
     #TODO: print route
     ## dp
     n = len(board)
@@ -110,18 +112,14 @@ def num_of_shortest_path_dp(board: list):
                         return (different_direction[0] + 1, different_direction[1])
                 cur[0] = calculate(dp[i][j-1][0], dp[i][j-1][1])
                 cur[1] = calculate(dp[i-1][j][1], dp[i-1][j][0])        
-                
-    print_board(board)
-    for i in range(n):
-        print(dp[i])
+    
 
     result = dp[n - 1][n - 1][0][1]
     if dp[n - 1][n - 1][0][0] == dp[n - 1][n - 1][1][0]:
         result += dp[n - 1][n - 1][1][1]
     elif dp[n - 1][n - 1][1][0] < dp[n - 1][n - 1][0][0]:
-        result = dp[n - 1][n - 1][1][0]
+        result = dp[n - 1][n - 1][1][1]
 
-    print(result)
     return result
 
 def num_of_shortest_path_recursion(board: list) -> int:
@@ -141,10 +139,6 @@ def num_of_shortest_path_recursion(board: list) -> int:
             return
         if i > n - 1 or j > n - 1 or board[i][j] == -1:
             return
-        
-        if i == j == 0:
-            recursion(i, j + 1, cost, 0)
-            recursion(i + 1, j, cost, 1)
         else:
             recursion(i, j + 1, cost + (direction != 0), 0)
             recursion(i + 1, j, cost + (direction != 1), 1)
@@ -156,29 +150,37 @@ def num_of_shortest_path_recursion(board: list) -> int:
 
 
         
-def get_expected_value(n: int) -> float:
-    t = 1000000 #find threshold
+def get_expected_value(n: int, fn: callable) -> float:
+    t = 100000 
     sum = 0
 
-    b = create_board(n)
-    print_board(b)
-    n1 = numb_of_ways_dp(b)
-    n2 = num_of_ways_recursion(b)
-
-    n3 = num_of_shortest_path_recursion(b)
-    n4 = num_of_shortest_path_dp(b)
-    print("rec dp",n3, n4)
-    # print(n1, n2)
-
-
-    # for _ in range(t):
-    #     board = create_board(n)
-    #     print_board(board)
-    #     w = numb_of_ways(board)
-    #     print(w)
-    #     sum += w
+    for _ in range(t):
+        board = create_board(n)
+        w = fn(board)
+        sum += w
     return sum / t
+
+def draw_plot(max_n: int, fn: callable, color, title=""):
+    x_int = np.arange(1, max_n + 1)
+    print(x_int)
+        
+    y = [get_expected_value(x_int[i], fn) for i in range(len(x_int))]
+    print(y)
+    plt.plot(x_int, y, color)
+
+    plt.title(title)
+    plt.xlabel("n")
+    plt.ylabel("path count")
 
 if __name__ == '__main__':
     n = int(input("Enter n:\n"))
-    print(get_expected_value(n))
+    # draw_plot(n, numb_of_ways_dp, "r")
+    draw_plot(n, num_of_shortest_path_dp, "b", "Number of shortest path")
+
+    plt.show()
+
+    # print(get_expected_value(20, numb_of_ways_dp))
+    # b = create_board(n)
+    # print_board(b)
+    # print(numb_of_ways_dp(b))
+    
