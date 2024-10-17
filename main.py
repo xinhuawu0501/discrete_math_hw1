@@ -219,7 +219,7 @@ def draw_complexity_comparison(n=30, fn1=num_of_shortest_path_recursion, fn2=num
 
     plt.legend()
     plt.title(f"Execution time comparison (n={n})")
-    plt.savefig("time_comparison.png")
+    plt.savefig(f"time_comparison_{n}.png")
     plt.show()
 
 
@@ -228,30 +228,30 @@ if __name__ == '__main__':
     n = int(input("Enter n:\n"))
     obstacle = float(input("Enter density of obstacle (0-1):\n")) 
    
-    # print(get_expected_value(n, numb_of_ways_dp))
-    # print(get_expected_value(n, obstacle, num_of_shortest_path_dp))
+    print(get_expected_value(n, obstacle, numb_of_path_dp))
+    print(get_expected_value(n, obstacle, num_of_shortest_path_dp))
 
-    ##! comment the code below if you don't want ot draw plot
-    ## 1. scenario 1
-    title1 = f"Number of path (obstacle density={obstacle})"
-    filename1 = f"all_path_{n}.png"
+    ##! comment the code below if you don't want to print plot
+    # ## 1. scenario 1
+    # title1 = f"Number of path (obstacle density={obstacle})"
+    # filename1 = f"all_path_{n}.png"
     # draw_plot(n, numb_of_path_dp, obstacle, "r",  title1, filename1)
 
-    ## 2. scenario 2: 
-    title2 = f"Number of shortest path (obstacle density={obstacle})"
-    filename2 = f"shortest_path_{n}.png"
+    # ## 2. scenario 2: 
+    # title2 = f"Number of shortest path (obstacle density={obstacle})"
+    # filename2 = f"shortest_path_{n}.png"
     # draw_plot(n, num_of_shortest_path_dp, obstacle, "b", title2, filename2)
 
-    ## compare different obstacle density
-    title_ob1=f"Number of path count (n={n})"
+    # ## compare different obstacle density
+    # title_ob1=f"Number of path count (n={n})"
     # draw_diff_obstacle_density(n, numb_of_path_dp, title_ob1)
 
-    title_ob2=f"Number of shortest path count (n={n})"
-    filename_ob2 = f"compare_obstacle_density_{n}.png"
+    # title_ob2=f"Number of shortest path count (n={n})"
+    # filename_ob2 = f"compare_obstacle_density_{n}.png"
 
     # draw_diff_obstacle_density(n, num_of_shortest_path_dp, title_ob2, filename_ob2)
 
-    ## compare algorithm efficiency
-    draw_complexity_comparison(n)
-    plt.show()
+    # ## compare algorithm efficiency
+    # draw_complexity_comparison(n)
+    # plt.show()
     
