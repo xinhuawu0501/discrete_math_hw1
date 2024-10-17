@@ -1,5 +1,7 @@
 import random
 import sys
+import timeit
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -159,21 +161,59 @@ def get_expected_value(n=20, obstacle=0.2, fn=numb_of_path_dp) -> float:
     return sum / t
 
 def draw_plot(max_n: int, fn: callable, obstacle=0.2, color="r", title="", filename="plot.png"):
-    x_int = np.arange(1, max_n + 1)
+    x_int = np.arange(2, max_n + 1)
     print(x_int)
         
     y = [get_expected_value(x_int[i], obstacle, fn) for i in range(len(x_int))]
     print(y)
 
     plt.plot(x_int, y, color)
+    # plt.yscale('log', base=4) 
     plt.xticks(x_int)
 
 
     plt.title(title)
     plt.xlabel("n")
     plt.ylabel("path count")
+    
 
     plt.savefig(filename)
+
+def draw_diff_obstacle_density(n=30, fn=numb_of_path_dp, title="", filename=""):
+    x = np.linspace(0.2, 0.5)
+    print(x)
+
+    y = [get_expected_value(n, x[i], fn) for i in range(len(x))]
+
+    print(y)
+    plt.plot(x, y, "g")
+
+    plt.title(title)
+    plt.xlabel("density")
+    plt.ylabel("path count")
+
+    # plt.ylim(1000)
+
+    plt.savefig(filename)
+
+def draw_complexity_comparison(n=30, fn1="num_of_shortest_path_recursion", fn2="num_of_shortest_path_dp"):
+    x = np.arange(1, n + 1)
+
+    y1 = []
+    y2 = []
+
+    for size in x:
+        time = timeit.timeit(f"{fn1}({size})", globals=globals(), number=100)
+        y1.append(time)
+
+        time2 = timeit.timeit(f"{fn2}({size})", globals=globals(), number=100)
+        y2.append(time2)
+    
+    plt.plot(x, y1, "b")
+    plt.plot(x, y2, "r")
+
+    plt.show()
+
 
 if __name__ == '__main__':
     n = int(input("Enter n:\n"))
@@ -185,13 +225,24 @@ if __name__ == '__main__':
     ##! comment the code below if you don't want ot draw plot
     ## 1. scenario 1
     title1 = f"Number of path (obstacle density={obstacle})"
-    filename1 = "all_path.png"
-    draw_plot(n, numb_of_path_dp, obstacle, "r",  title1, filename1)
+    filename1 = f"all_path_{n}.png"
+    # draw_plot(n, numb_of_path_dp, obstacle, "r",  title1, filename1)
 
     ## 2. scenario 2: 
     title2 = f"Number of shortest path (obstacle density={obstacle})"
-    filename2 = "shortest_path.png"
+    filename2 = f"shortest_path_{n}.png"
     # draw_plot(n, num_of_shortest_path_dp, obstacle, "b", title2, filename2)
 
+    ## compare different obstacle density
+    title_ob1=f"Number of path count (n={n})"
+    # draw_diff_obstacle_density(n, numb_of_path_dp, title_ob1)
+
+    title_ob2=f"Number of shortest path count (n={n})"
+    filename_ob2 = f"compare_obstacle_density_{n}.png"
+
+    draw_diff_obstacle_density(n, num_of_shortest_path_dp, title_ob2, filename_ob2)
+
+    ## compare algorithm efficiency
+    # draw_complexity_comparison(n)
     plt.show()
     
