@@ -196,23 +196,32 @@ def draw_diff_obstacle_density(n=30, fn=numb_of_path_dp, title="", filename=""):
 
     plt.savefig(filename)
 
-def draw_complexity_comparison(n=30, fn1="num_of_shortest_path_recursion", fn2="num_of_shortest_path_dp"):
+def draw_complexity_comparison(n=30, fn1=num_of_shortest_path_recursion, fn2=num_of_shortest_path_dp):
     x = np.arange(1, n + 1)
 
     y1 = []
     y2 = []
 
     for size in x:
-        time = timeit.timeit(f"{fn1}({size})", globals=globals(), number=100)
+        board = create_board(size)
+
+        time = timeit.timeit(lambda: fn1(board), globals=globals(), number=10000) / 1000
         y1.append(time)
 
-        time2 = timeit.timeit(f"{fn2}({size})", globals=globals(), number=100)
+        time2 = timeit.timeit(lambda: fn2(board), globals=globals(), number=10000) / 1000
         y2.append(time2)
     
-    plt.plot(x, y1, "b")
-    plt.plot(x, y2, "r")
+    plt.plot(x, y1, "b", label="recursion")
+    plt.plot(x, y2, "r", label="dp")
 
+    plt.xlabel("n")
+    plt.ylabel("ms")
+
+    plt.legend()
+    plt.title(f"Execution time comparison (n={n})")
+    plt.savefig("time_comparison.png")
     plt.show()
+
 
 
 if __name__ == '__main__':
@@ -240,9 +249,9 @@ if __name__ == '__main__':
     title_ob2=f"Number of shortest path count (n={n})"
     filename_ob2 = f"compare_obstacle_density_{n}.png"
 
-    draw_diff_obstacle_density(n, num_of_shortest_path_dp, title_ob2, filename_ob2)
+    # draw_diff_obstacle_density(n, num_of_shortest_path_dp, title_ob2, filename_ob2)
 
     ## compare algorithm efficiency
-    # draw_complexity_comparison(n)
+    draw_complexity_comparison(n)
     plt.show()
     
