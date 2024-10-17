@@ -23,10 +23,10 @@ def print_board(board: list):
         print("\n")
 
 
-def create_board(n: int) -> list:
+def create_board(n: int, obstacle = 0.2) -> list:
     board = [[None for _ in range(n)] for _ in range(n)]
     
-    ob = gen_obstacle(n, 0.2)
+    ob = gen_obstacle(n, obstacle)
     for i in range(len(ob)):
         row = int(ob[i] / n)
         col = int(ob[i] % n)
@@ -34,10 +34,8 @@ def create_board(n: int) -> list:
     
     return board
 
-## basic
-def numb_of_ways_dp(board: list):
-    #TODO: print route
-    ## dp
+## scenario 1
+def numb_of_path_dp(board: list):
     n = len(board)
     dp = [[0 for _ in  range(n)] for _ in range(n)]
     
@@ -59,7 +57,7 @@ def numb_of_ways_dp(board: list):
 
     return dp[n - 1][n - 1]
 
-def num_of_ways_recursion(board: list) -> int:
+def num_of_path_recursion(board: list) -> int:
     n = len(board)
 
     def recursion(i: int, j: int) -> int:
@@ -75,7 +73,7 @@ def num_of_ways_recursion(board: list) -> int:
     return recursion(0, 0)
 
 
-## advanced
+## scenario 2
 ## whenever changing direction, cost + 1
 def num_of_shortest_path_dp(board: list):
     n = len(board)
@@ -150,37 +148,50 @@ def num_of_shortest_path_recursion(board: list) -> int:
 
 
         
-def get_expected_value(n: int, fn: callable) -> float:
+def get_expected_value(n=20, obstacle=0.2, fn=numb_of_path_dp) -> float:
     t = 100000 
     sum = 0
 
     for _ in range(t):
-        board = create_board(n)
+        board = create_board(n, obstacle)
         w = fn(board)
         sum += w
     return sum / t
 
-def draw_plot(max_n: int, fn: callable, color, title=""):
+def draw_plot(max_n: int, fn: callable, obstacle=0.2, color="r", title="", filename="plot.png"):
     x_int = np.arange(1, max_n + 1)
     print(x_int)
         
-    y = [get_expected_value(x_int[i], fn) for i in range(len(x_int))]
+    y = [get_expected_value(x_int[i], obstacle, fn) for i in range(len(x_int))]
     print(y)
+
     plt.plot(x_int, y, color)
+    plt.xticks(x_int)
+
 
     plt.title(title)
     plt.xlabel("n")
     plt.ylabel("path count")
 
+    plt.savefig(filename)
+
 if __name__ == '__main__':
     n = int(input("Enter n:\n"))
-    # draw_plot(n, numb_of_ways_dp, "r")
-    draw_plot(n, num_of_shortest_path_dp, "b", "Number of shortest path")
+    obstacle = float(input("Enter density of obstacle (0-1):\n")) 
+   
+    # print(get_expected_value(n, numb_of_ways_dp))
+    # print(get_expected_value(n, obstacle, num_of_shortest_path_dp))
+
+    ##! comment the code below if you don't want ot draw plot
+    ## 1. scenario 1
+    title1 = f"Number of path (obstacle density={obstacle})"
+    filename1 = "all_path.png"
+    draw_plot(n, numb_of_path_dp, obstacle, "r",  title1, filename1)
+
+    ## 2. scenario 2: 
+    title2 = f"Number of shortest path (obstacle density={obstacle})"
+    filename2 = "shortest_path.png"
+    # draw_plot(n, num_of_shortest_path_dp, obstacle, "b", title2, filename2)
 
     plt.show()
-
-    # print(get_expected_value(20, numb_of_ways_dp))
-    # b = create_board(n)
-    # print_board(b)
-    # print(numb_of_ways_dp(b))
     
