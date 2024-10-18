@@ -205,10 +205,10 @@ def draw_complexity_comparison(n=30, fn1=num_of_shortest_path_recursion, fn2=num
     for size in x:
         board = create_board(size)
 
-        time = timeit.timeit(lambda: fn1(board), globals=globals(), number=10000) / 1000
+        time = timeit.timeit(lambda: fn1(board), globals=globals(), number=1000) / 1000
         y1.append(time)
 
-        time2 = timeit.timeit(lambda: fn2(board), globals=globals(), number=10000) / 1000
+        time2 = timeit.timeit(lambda: fn2(board), globals=globals(), number=1000) / 1000
         y2.append(time2)
     
     plt.plot(x, y1, "b", label="recursion")
